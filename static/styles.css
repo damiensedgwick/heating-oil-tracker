@@ -95,7 +95,7 @@ main {
 
 .hero__title {
   padding-bottom: 2rem;
-  font-size: 2rem;
+  font-size: 1.75rem;
 }
 
 .hero__intro {
@@ -106,7 +106,6 @@ main {
 .waitlist-form {
   display: flex;
   flex-direction: column;
-  min-width: 22rem;
 }
 
 .waitlist-form__group {
