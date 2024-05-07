@@ -7,6 +7,7 @@
   <title>Heating Oil Tracker | Monitor and gauge your heating oil levels</title>
   <meta name="description"
     content="Effortlessly track your heating oil levels with our intuitive Heating Oil Tracker app. Stay in control of your home's warmth, ensuring you're never left in the cold. Sign up now for peace of mind!">
+  <link rel="icon" type="image/x-icon" href="static/favicon.png">
   <link href="static/twcolors.min.css" rel="stylesheet">
   <link href="static/styles.css" rel="stylesheet">
   <script src="static/htmx.min.js"></script>
@@ -77,8 +78,8 @@
 <form class="waitlist-form" id="waitlist-form" hx-post="/join-waitlist" hx-swap="outerHTML">
   <div class="waitlist-form__group">
     <label class="waitlist-form__label" for="email">
-      <input class="waitlist-form__input" type="text" name="email" placeholder="Please enter your email" {{ if
-        .Values.email}} value="{{ .Values.email }}" {{end}} required>
+      <input id="email" class="waitlist-form__input" type="text" name="email" placeholder="Please enter your email" {{
+        if .Values.email}} value="{{ .Values.email }}" {{end}} autocomplete="email" required>
     </label>
 
     <button class="btn waitlist-form__btn" type="submit">Join Waitlist</button>
