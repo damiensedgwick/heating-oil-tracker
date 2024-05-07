@@ -116,6 +116,7 @@ main {
 .waitlist-form__label {}
 
 .waitlist-form__input {
+  font-size: 1.1rem;
   padding: 0.5rem;
   width: 100%;
   margin-bottom: 1rem;
