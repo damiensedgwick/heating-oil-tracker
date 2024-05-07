@@ -46,11 +46,18 @@ main {
 }
 
 .nav__brand {
+  display: flex;
+  align-items: center;
   color: var(--tw-slate-100);
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+.nav__brand>svg {
+  height: 1.8rem;
+  width: 1.8rem;
 }
 
 .nav__list {

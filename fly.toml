@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for heating-oil-tracker on 2024-05-07T20:35:53+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'heating-oil-tracker'
+primary_region = 'lhr'
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[mounts]]
+  source = "heating_oil_tracker_database"
+  destination = "/data"
+  initial_size = "1gb"
+
+[[vm]]
+  size = 'shared-cpu-1x'
