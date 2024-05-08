@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	// "golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -57,6 +58,10 @@ func main() {
 
 	e.GET("/", homepageHandler())
 	e.POST("/join-waitlist", joinWaitlistHandler(db))
+	e.GET("/auth/sign-in", signIn())
+	e.POST("/auth/sign-in", signInWithEmailAndPassword(db))
+	// e.POST("/auth/sign-up", signUp())
+	// e.POST("/auth/sign-out", signOut())
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -168,10 +173,23 @@ type User struct {
 	Name      string
 	Email     string
 	Password  string
+	Role      string
 	CreatedAt time.Time
 	UpdatedAt *time.Time
 }
 
 func newUser() User {
 	return User{}
+}
+
+func signIn() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.Render(200, "auth-form", nil)
+	}
+}
+
+func signInWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.Render(200, "index", nil)
+	}
 }
