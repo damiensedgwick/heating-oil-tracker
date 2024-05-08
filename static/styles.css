@@ -64,13 +64,12 @@ main {
   width: 325px;
   display: flex;
   list-style: none;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .nav__link {
   cursor: pointer;
   color: var(--tw-slate-100);
-  margin-right: 1rem;
   text-decoration: none;
   text-transform: uppercase;
   background: none;

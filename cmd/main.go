@@ -190,6 +190,7 @@ func signIn() echo.HandlerFunc {
 
 func signInWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// TODO: Add code to handle the user signing in and return the user to the index view with a session created
 		return c.Render(200, "index", nil)
 	}
 }
