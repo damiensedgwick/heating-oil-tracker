@@ -57,10 +57,15 @@ func main() {
 	db.AutoMigrate(&Lead{}, &User{})
 
 	e.GET("/", homepageHandler())
+
 	e.POST("/join-waitlist", joinWaitlistHandler(db))
+
 	e.GET("/auth/sign-in", signIn())
 	e.POST("/auth/sign-in", signInWithEmailAndPassword(db))
-	// e.POST("/auth/sign-up", signUp())
+
+	e.GET("/auth/sign-up", signUp())
+	e.POST("/auth/sign-up", signUpWithEmailAndPassword(db))
+
 	// e.POST("/auth/sign-out", signOut())
 
 	e.Logger.Fatal(e.Start(":8080"))
@@ -182,9 +187,22 @@ func newUser() User {
 	return User{}
 }
 
+func signUp() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.Render(200, "sign-up-form", nil)
+	}
+}
+
+func signUpWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// TODO: Add code to handle the user signing in and return the user to the index view with a session created
+		return c.Render(200, "index", nil)
+	}
+}
+
 func signIn() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return c.Render(200, "auth-form", nil)
+		return c.Render(200, "sign-in-form", nil)
 	}
 }
 

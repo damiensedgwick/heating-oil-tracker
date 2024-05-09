@@ -27,6 +27,16 @@ main {
   font-weight: bold;
 }
 
+.btn-ghost {
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  color: var(--tw-orange-500);
+  background: none;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
 .container {
   margin: 0 auto;
   padding: 0 1rem;
@@ -130,6 +140,7 @@ main {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -209,6 +220,10 @@ main {
 
 .auth-form__btn {
   width: 100%;
+}
+
+.auth-form__type {
+  margin-top: 1rem;
 }
 
 @media screen and (min-width: 768px) {
