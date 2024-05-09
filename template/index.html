@@ -29,15 +29,21 @@
           <span>T</span>
         </a>
         <ul class="nav__list">
-          <!-- <li class="nav__item"> -->
-          <!--   <a class="nav__link" href="#" title="Dashboard">Dashboard</a> -->
-          <!-- </li> -->
+          {{ if not .User }}
           <li class="nav__item">
             <button class="nav__link" hx-get="/auth/sign-in" hx-target="#body">Sign In</button>
           </li>
-          <!-- <li class="nav__item"> -->
-          <!--   <a class="nav__link" href="#" title="Sign Out">Sign Out</a> -->
-          <!-- </li> -->
+          {{ end }}
+
+          {{ if .User }}
+          <li class="nav__item">
+            <button class="nav__link" hx-get="/dashboard" hx-target="#body">Dashboard</button>
+          </li>
+          <li class="nav__item">
+            <button class="nav__link" hx-post="/auth/sign-out" hx-target="#body">Sign Out</button>
+          </li>
+          {{ end }}
+
         </ul>
       </div>
     </div>
@@ -49,7 +55,9 @@
         Stay ahead of the chill and avoid pricing hikes! Join the waitlist now for our heating oil tracker, keep your
         home cozy all year long and never run low on warmth again!
       </p>
+      {{ if not .User }}
       {{ template "waitlist" .LeadForm }}
+      {{ end }}
     </div>
   </main>
 
@@ -95,7 +103,7 @@
 
 {{ block "sign-in-form" . }}
 <div class="auth-form__wrapper">
-  <form class="auth-form" id="auth-form" hx-post="/auth/sign-in" hx-swap="#body">
+  <form class="auth-form" id="auth-form" hx-post="/auth/sign-in" hx-swap="outerHTML">
     <p class="auth-form__title">
       <span>H</span>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -127,16 +135,16 @@
       {{ .Errors.message}}
     </p>
     {{ end }}
-  </form>
 
-  <p class="auth-form__type">Do you need an account? <button class="btn btn-ghost" type="button" hx-get="/auth/sign-up"
-      hx-target="#body">Register Now</button></p>
+    <p class="auth-form__type">Do you need an account? <button class="btn btn-ghost" type="button"
+        hx-get="/auth/sign-up" hx-target="#body">Register Now</button></p>
+  </form>
 </div>
 {{ end }}
 
 {{ block "sign-up-form" . }}
 <div class="auth-form__wrapper">
-  <form class="auth-form" id="auth-form" hx-post="/auth/sign-up" hx-swap="#body">
+  <form class="auth-form" id="auth-form" hx-post="/auth/sign-up" hx-swap="outerHTML">
     <p class="auth-form__title">
       <span>H</span>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -147,6 +155,14 @@
       </svg>
       <span>T</span>
     </p>
+
+    <div class="auth-form__group">
+      <label class="auth-form__label" for="name">
+        Name
+      </label>
+      <input id="name" class="auth-form__input" type="text" name="name" autocomplete="name" value="" required>
+    </div>
+
     <div class="auth-form__group">
       <label class="auth-form__label" for="email">
         Email
@@ -163,14 +179,14 @@
 
     <button class="btn auth-form__btn" type="submit">Sign In</button>
 
-    {{ if .Errors.message}}
+    {{ if .Errors.email}}
     <p class="auth-form__message auth-form__message-error">
-      {{ .Errors.message}}
+      {{ .Errors.email}}
     </p>
     {{ end }}
-  </form>
 
-  <p class="auth-form__type">Already have an account? <button class="btn btn-ghost" type="button" hx-get="/auth/sign-in"
-      hx-target="#body">Sign In</button></p>
+    <p class="auth-form__type">Already have an account? <button class="btn btn-ghost" type="button"
+        hx-get="/auth/sign-in" hx-target="#body">Sign In</button></p>
+  </form>
 </div>
 {{ end }}

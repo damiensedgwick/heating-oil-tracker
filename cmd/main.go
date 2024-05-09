@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/mail"
 	"os"
 	"time"
@@ -14,7 +15,7 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	// "golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -66,17 +67,17 @@ func main() {
 	e.GET("/auth/sign-up", signUp())
 	e.POST("/auth/sign-up", signUpWithEmailAndPassword(db))
 
-	// e.POST("/auth/sign-out", signOut())
+	e.POST("/auth/sign-out", signOut())
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
 type PageData struct {
 	User     User
-	LeadForm LeadFormData
+	LeadForm FormData
 }
 
-func newPageData(user User, leadForm LeadFormData) PageData {
+func newPageData(user User, leadForm FormData) PageData {
 	return PageData{
 		User:     user,
 		LeadForm: leadForm,
@@ -94,10 +95,10 @@ func homepageHandler() echo.HandlerFunc {
 				return err
 			}
 
-			return c.Render(200, "index", newPageData(user, newLeadFormData()))
+			return c.Render(200, "index", newPageData(user, newFormData()))
 		}
 
-		return c.Render(200, "index", newPageData(newUser(), newLeadFormData()))
+		return c.Render(200, "index", nil)
 	}
 }
 
@@ -108,13 +109,13 @@ type Lead struct {
 	UpdatedAt *time.Time
 }
 
-type LeadFormData struct {
+type FormData struct {
 	Errors map[string]string
 	Values map[string]string
 }
 
-func newLeadFormData() LeadFormData {
-	return LeadFormData{
+func newFormData() FormData {
+	return FormData{
 		Errors: map[string]string{},
 		Values: map[string]string{},
 	}
@@ -125,7 +126,7 @@ func joinWaitlistHandler(db *gorm.DB) echo.HandlerFunc {
 		email := c.FormValue("email")
 		_, err := mail.ParseAddress(email)
 		if err != nil {
-			return c.Render(422, "waitlist", LeadFormData{
+			return c.Render(422, "waitlist", FormData{
 				Errors: map[string]string{
 					"email": "Oops! That email appears to be invalid",
 				},
@@ -136,7 +137,7 @@ func joinWaitlistHandler(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		if leadExists(email, db) {
-			return c.Render(422, "waitlist", LeadFormData{
+			return c.Render(422, "waitlist", FormData{
 				Errors: map[string]string{
 					"email": "Oops! It appears you are already subscribed",
 				},
@@ -151,7 +152,7 @@ func joinWaitlistHandler(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		if err := db.Create(&lead).Error; err != nil {
-			return c.Render(500, "waitlist", LeadFormData{
+			return c.Render(500, "waitlist", FormData{
 				Errors: map[string]string{
 					"email": "Oops! It appears we have had an error",
 				},
@@ -159,13 +160,23 @@ func joinWaitlistHandler(db *gorm.DB) echo.HandlerFunc {
 			})
 		}
 
-		return c.Render(200, "waitlist", newLeadFormData())
+		return c.Render(200, "waitlist", newFormData())
 	}
 }
 
 func leadExists(email string, db *gorm.DB) bool {
 	var lead Lead
 	err := db.First(&lead, "email = ?", email).Error
+	if err == gorm.ErrRecordNotFound {
+		return false
+	}
+
+	return true
+}
+
+func userExists(email string, db *gorm.DB) bool {
+	var user User
+	err := db.First(&user, "email = ?", email).Error
 	if err == gorm.ErrRecordNotFound {
 		return false
 	}
@@ -195,8 +206,59 @@ func signUp() echo.HandlerFunc {
 
 func signUpWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// TODO: Add code to handle the user signing in and return the user to the index view with a session created
-		return c.Render(200, "index", nil)
+		name := c.FormValue("name")
+		email := c.FormValue("email")
+		password := c.FormValue("password")
+
+		_, err := mail.ParseAddress(email)
+		if err != nil {
+			return c.Render(422, "sign-up-form", FormData{
+				Errors: map[string]string{
+					"email": "Oops! That email appears to be invalid",
+				},
+				Values: map[string]string{
+					"email": email,
+				},
+			})
+		}
+
+		if userExists(email, db) {
+			return c.Render(422, "sign-up-form", FormData{
+				Errors: map[string]string{
+					"email": "Oops! It appears you are already registered",
+				},
+				Values: map[string]string{
+					"email": email,
+				},
+			})
+		}
+
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+		if err != nil {
+			log.Fatal("Could not hash sign up password")
+		}
+
+		now := time.Now()
+
+		user := User{
+			Name:      name,
+			Email:     email,
+			Password:  string(hash),
+			Role:      "user",
+			CreatedAt: now,
+		}
+
+		if err := db.Create(&user).Error; err != nil {
+			return c.Render(500, "sign-up-form", FormData{
+				Errors: map[string]string{
+					"email": "Oops! It appears we have had an error",
+				},
+				Values: map[string]string{},
+			})
+		}
+
+		return c.Render(200, "index", newPageData(newUser(), newFormData()))
+
 	}
 }
 
@@ -208,7 +270,69 @@ func signIn() echo.HandlerFunc {
 
 func signInWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// TODO: Add code to handle the user signing in and return the user to the index view with a session created
+		email := c.FormValue("email")
+		password := c.FormValue("password")
+
+		_, err := mail.ParseAddress(email)
+		if err != nil {
+			return c.Render(422, "sign-in-form", FormData{
+				Errors: map[string]string{
+					"email": "Oops! That email appears to be invalid",
+				},
+				Values: map[string]string{
+					"email": email,
+				},
+			})
+		}
+
+		var user User
+		db.First(&user, "email = ?", email)
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+			return c.Render(422, "sign-in-form", FormData{
+				Errors: map[string]string{
+					"email": "Oops! Email or password is incorrect.",
+				},
+				Values: map[string]string{
+					"email": email,
+				},
+			})
+		}
+
+		sess, _ := session.Get("session", c)
+		sess.Options = &sessions.Options{
+			Path:     "/",
+			MaxAge:   86400 * 7,
+			HttpOnly: true,
+		}
+
+		userBytes, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println("error marshalling user value")
+			return err
+		}
+
+		sess.Values["user"] = userBytes
+
+		err = sess.Save(c.Request(), c.Response())
+		if err != nil {
+			fmt.Println("error saving session: ", err)
+			return err
+		}
+
+		return c.Render(200, "index", newPageData(user, newFormData()))
+	}
+}
+
+func signOut() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, _ := session.Get("session", c)
+		sess.Options.MaxAge = -1
+		err := sess.Save(c.Request(), c.Response())
+		if err != nil {
+			fmt.Println("error saving session")
+			return err
+		}
+
 		return c.Render(200, "index", nil)
 	}
 }

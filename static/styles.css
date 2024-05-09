@@ -77,6 +77,14 @@ main {
   justify-content: flex-end;
 }
 
+.nav__item {
+  margin-right: 1rem;
+}
+
+.nav__item:last-child {
+  margin: 0;
+}
+
 .nav__link {
   cursor: pointer;
   color: var(--tw-slate-100);
@@ -223,6 +231,7 @@ main {
 }
 
 .auth-form__type {
+  text-align: center;
   margin-top: 1rem;
 }
 
