@@ -144,7 +144,13 @@ main {
   border-radius: 0.25rem;
 }
 
+.waitlist-form__btn {
+  width: 100%;
+  padding: 0.66rem 0;
+}
+
 .auth-form__wrapper {
+  padding: 0 1rem;
   width: 100%;
   height: 100%;
   display: flex;
@@ -232,7 +238,7 @@ main {
 
 .auth-form__type {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 @media screen and (min-width: 768px) {

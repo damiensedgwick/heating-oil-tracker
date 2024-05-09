@@ -128,7 +128,7 @@ func joinWaitlistHandler(db *gorm.DB) echo.HandlerFunc {
 		if err != nil {
 			return c.Render(422, "waitlist", FormData{
 				Errors: map[string]string{
-					"email": "Oops! That email appears to be invalid",
+					"email": "Oops! That email address appears to be invalid",
 				},
 				Values: map[string]string{
 					"email": email,
@@ -214,7 +214,7 @@ func signUpWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 		if err != nil {
 			return c.Render(422, "sign-up-form", FormData{
 				Errors: map[string]string{
-					"email": "Oops! That email appears to be invalid",
+					"email": "Oops! That email address appears to be invalid",
 				},
 				Values: map[string]string{
 					"email": email,
@@ -257,8 +257,7 @@ func signUpWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 			})
 		}
 
-		return c.Render(200, "index", newPageData(newUser(), newFormData()))
-
+		return c.Render(200, "index", nil)
 	}
 }
 
@@ -277,7 +276,7 @@ func signInWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 		if err != nil {
 			return c.Render(422, "sign-in-form", FormData{
 				Errors: map[string]string{
-					"email": "Oops! That email appears to be invalid",
+					"email": "Oops! That email address appears to be invalid",
 				},
 				Values: map[string]string{
 					"email": email,
@@ -290,7 +289,7 @@ func signInWithEmailAndPassword(db *gorm.DB) echo.HandlerFunc {
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 			return c.Render(422, "sign-in-form", FormData{
 				Errors: map[string]string{
-					"email": "Oops! Email or password is incorrect.",
+					"email": "Oops! Email address or password is incorrect.",
 				},
 				Values: map[string]string{
 					"email": email,

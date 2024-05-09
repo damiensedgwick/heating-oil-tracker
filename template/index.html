@@ -103,7 +103,7 @@
 
 {{ block "sign-up-form" . }}
 <div class="auth-form__wrapper">
-  <form class="auth-form" id="sign-up-form" hx-post="/auth/sign-up" hx-swap="outerHTML">
+  <form class="auth-form" id="sign-up-form" hx-post="/auth/sign-up" hx-target="body">
     <p class="auth-form__title">
       <span>H</span>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
