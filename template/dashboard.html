@@ -1,0 +1,40 @@
+{{ block "dashboard" . }}
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Heating Oil Tracker | Monitor and gauge your heating oil levels</title>
+  <meta name="description"
+    content="Effortlessly track your heating oil levels with our intuitive Heating Oil Tracker app. Stay in control of your home's warmth, ensuring you're never left in the cold. Sign up now for peace of mind!">
+  <link rel="icon" type="image/x-icon" href="static/favicon.png">
+  <link href="static/twcolors.min.css" rel="stylesheet">
+  <link href="static/styles.css" rel="stylesheet">
+  <script src="static/htmx.min.js"></script>
+</head>
+
+<body id="body">
+  <div class="dashboard__wrapper">
+    <p>We will be ready soon!</p>
+  </div>
+
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", (event) => {
+      document.body.addEventListener('htmx:beforeSwap', function (evt) {
+        if (evt.detail.xhr.status === 422) {
+          console.log("setting status to paint");
+          // allow 422 responses to swap as we are using this as a signal that
+          // a form was submitted with bad data and want to rerender with the
+          // errors
+          //
+          // set isError to false to avoid error logging in console
+          evt.detail.shouldSwap = true;
+          evt.detail.isError = false;
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
+{{ end }}

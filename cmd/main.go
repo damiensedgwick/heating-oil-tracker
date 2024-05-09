@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"net/http"
 	"net/mail"
 	"os"
 	"time"
@@ -68,6 +69,8 @@ func main() {
 	e.POST("/auth/sign-up", signUpWithEmailAndPassword(db))
 
 	e.POST("/auth/sign-out", signOut())
+
+	e.GET("/dashboard", dashboardHandler())
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -333,5 +336,33 @@ func signOut() echo.HandlerFunc {
 		}
 
 		return c.Render(200, "index", nil)
+	}
+}
+
+type DashboardData struct {
+	User User
+}
+
+func newDashboardData(user User) DashboardData {
+	return DashboardData{
+		User: user,
+	}
+}
+
+func dashboardHandler() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, _ := session.Get("session", c)
+		if sess.Values["user"] != nil {
+			var user User
+			err := json.Unmarshal(sess.Values["user"].([]byte), &user)
+			if err != nil {
+				fmt.Println("error unmarshalling user value")
+				return err
+			}
+
+			return c.Render(200, "dashboard", newDashboardData(user))
+		}
+
+		return c.Redirect(http.StatusFound, "/")
 	}
 }
