@@ -72,6 +72,8 @@ func main() {
 
 	e.GET("/dashboard", dashboardHandler())
 
+	e.GET("/admin", adminHandler(db))
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
@@ -361,6 +363,48 @@ func dashboardHandler() echo.HandlerFunc {
 			}
 
 			return c.Render(200, "dashboard", newDashboardData(user))
+		}
+
+		return c.Redirect(http.StatusFound, "/")
+	}
+}
+
+type AdminData struct {
+	User  User
+	Leads []Lead
+}
+
+func newAdminData(user User, leads []Lead) AdminData {
+	return AdminData{
+		User:  user,
+		Leads: leads,
+	}
+}
+
+func adminHandler(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, _ := session.Get("session", c)
+		if sess.Values["user"] != nil {
+			var user User
+			err := json.Unmarshal(sess.Values["user"].([]byte), &user)
+			if err != nil {
+				fmt.Println("error unmarshalling user value")
+				return err
+			}
+
+			email := os.Getenv("HEATING_OIL_TRACKER_ADMIN_EMAIL")
+
+			if user.Email != email {
+				return c.Redirect(http.StatusFound, "/")
+			}
+
+			var leads []Lead
+			result := db.Find(&leads)
+			if result.Error != nil {
+				fmt.Println("error retrieving leads")
+			}
+
+			return c.Render(200, "admin", newAdminData(user, leads))
 		}
 
 		return c.Redirect(http.StatusFound, "/")

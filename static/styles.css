@@ -249,6 +249,16 @@ main {
   align-items: center;
 }
 
+.admin__wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
 @media screen and (min-width: 768px) {
   .hero__title {
     font-size: 4.25rem;
