@@ -47,6 +47,8 @@ main {
   padding: 1.5rem 0;
   position: fixed;
   width: 100%;
+  background: var(--tw-orange-500);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 .nav__content {
@@ -258,6 +260,20 @@ main {
   align-items: center;
 }
 
+.about {
+  margin: 0 auto;
+  padding: 1rem 0;
+  max-width: 1040px;
+}
+
+.about__title, .about__info, .about__anecdote {
+  margin-top: 1rem;
+}
+
+.about__anecdote-author {
+  margin-top: 1rem;
+  text-align: end;
+}
 
 @media screen and (min-width: 768px) {
   .hero__title {
@@ -288,5 +304,25 @@ main {
   .waitlist-form__input {
     margin-bottom: 0;
     width: 95%;
+  }
+
+  .about {
+    padding: 2.5rem 0;
+  }
+
+  .about__title {
+    font-size: 2.25rem;
+  }
+
+  .about__info {
+    font-size: 1.2rem;
+  }
+
+  .about__anecdote {
+    font-size: 1.15rem;
+  }
+
+  .about__anecdote-author {
+    color: var(--tw-slate-500);
   }
 }
